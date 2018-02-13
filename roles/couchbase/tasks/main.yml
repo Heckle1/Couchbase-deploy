@@ -1,0 +1,35 @@
+#
+
+- name: Linux swappiness prep
+  shell: |
+    echo 0 > /proc/sys/vm/swappiness
+    echo '' >> /etc/sysctl.conf
+    echo '#Set swappiness to 0 to avoid swapping' >> /etc/sysctl.conf
+    echo 'vm.swappiness = 0' >> /etc/sysctl.conf
+
+
+- name: Get swappiness value
+  shell: cat /proc/sys/vm/swappiness
+  register: swappiness
+
+- fail:
+  msg: Can not deactivate swappiness
+  when: swappiness.stdout != '0'
+
+- name: Invalidate Transparent Huge Pages (THP)
+  shell: echo never > /sys/kernel/mm/transparent_hugepage/enabled echo 0 > /proc/sys/vm/swappiness
+  shell: echo '#Set swappiness to 0 to avoid swapping' >> /etc/sysctl.conf
+
+
+- name: Couchbase installation
+  yum:
+    name: http://packages.couchbase.com/releases/5.0.1/couchbase-server-enterprise-5.0.1-centos7.x86_64.rpm
+    state: present
+
+
+- name: Enable Couchbase on boot
+  systemd:
+    name: couchbase-server
+    enabled: yes
+    state: started
+

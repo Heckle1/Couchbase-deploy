@@ -1,0 +1,8 @@
+---
+  - hosts: centosbase-omi
+    remote_user: centos
+    sudo: True
+    gather_facts: yes
+    roles:
+      - couchbase
+
